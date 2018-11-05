@@ -101,13 +101,11 @@ def getUsuarios():
 def getUsuario(id):
     for usuario in usuarios:
         if usuario.get('id') == id:
-            return jsonify({'usuarios':usuario})
+            return jsonify({'usuario':usuario})
     abort(404)
 
 @app.route('/v1/usuarios/', methods=['POST'])
 def crearUsuario():
-    if not request.json or not 'email' in request.json:
-        abort(404)
     id = usuarios[-1].get('id') + 1
     nombreUsuario = request.json.get('nombreUsuario')
     age = request.json.get('age')
@@ -122,7 +120,7 @@ def actualizarUsuario(id):
 	usuario[0]['nombreUsuario'] = request.json.get('nombreUsuario', usuario[0]['nombreUsuario'])
 	usuario[0]['age'] = request.json.get('age', usuario[0]['age'])
 	usuario[0]['genre'] = request.json.get('genre', usuario[0]['genre'])
-	return jsonify({'usuarios':usuario[0]})
+	return jsonify({'usuario':usuario[0]})
 
 @app.route('/v1/usuarios/<int:id>/', methods=['DELETE'])
 def borrarUsuario(id):
@@ -135,46 +133,112 @@ def getDiagnosticos(id):
     resultado = []
     for diagnostico in diagnosticos:
         if diagnostico.get('id_user') == id:
-            resultado.append({'diagnosticos':diagnostico})
+            resultado.append({'diagnostico':diagnostico})
     return jsonify(resultado)
 
-
+@app.route('/v1/usuarios/<int:id>/diagnosticos/',methods = ['POST'])
+def postDiagnostico(id):
+	id_diag = diagnosticos[-1].get('id_diag') + 1
+	descripcion = request.json.get('descripcion')
+	fecha = request.json.get('fecha')
+	diagnostico = {'id_diag': id_diag, 'descripcion': descripcion, 'fecha': fecha, 'id_user': id}
+	diagnosticos.append(diagnostico)
+	print("esto:{}".format(diagnostico))
+	return jsonify({'diagnostico':diagnostico}),201
 
 @app.route('/v1/usuarios/<int:id>/diagnosticos/<int:id_diag>/',methods = ['GET'])
 def getDiagnostico(id,id_diag):
     for diagnostico in diagnosticos:
         if diagnostico.get('id_diag') == id_diag and diagnostico.get('id_user') == id:
-            return jsonify({'diagnosticos':diagnostico})
+            return jsonify({'diagnostico':diagnostico})
     abort(404)
+
+@app.route('/v1/usuarios/<int:id>/diagnosticos/<int:id_diag>/',methods = ['PUT'])
+def putDiagnostico(id,id_diag):
+	diagnostico = [diagnostico for diagnostico in diagnosticos if diagnostico['id_diag'] == id_diag]
+	diagnostico[0]['descripcion'] = request.json.get('descripcion', diagnostico[0]['descripcion'])
+	diagnostico[0]['fecha'] = request.json.get('fecha', diagnostico[0]['fecha'])
+	return jsonify({'diagnostico':diagnostico[0]})
+
+@app.route('/v1/usuarios/<int:id>/diagnosticos/<int:id_diag>/', methods=['DELETE'])
+def deleteDiagnostico(id,id_diag):
+	diagnostico = [diagnostico for diagnostico in diagnosticos if diagnostico['id_diag'] == id_diag]
+	diagnosticos.remove(diagnostico[0])
+	return jsonify({}), 204 # No content
 
 @app.route('/v1/usuarios/<int:id>/diagnosticos/<int:id_diag>/tratamientos/',methods = ['GET'])
 def getTratamientos(id,id_diag):
     resultado = []
     for tratamiento in tratamientos:
         if tratamiento.get('id_diag') == id_diag and tratamiento.get('id_diag') == id_diag:
-            resultado.append({'tratamientos':tratamiento})
+            resultado.append({'tratamiento':tratamiento})
     return jsonify(resultado)
 
-@app.route('/v1/usuarios/<int:id>/diagnosticos/<int:id_diag>/tratamientos/<int:id_tratamiento>',methods = ['GET'])
+@app.route('/v1/usuarios/<int:id>/diagnosticos/<int:id_diag>/tratamientos/',methods = ['POST'])
+def postTratamiento(id,id_diag):
+	id_tratamiento = tratamientos[-1].get('id_tratamiento') + 1
+	descripcion = request.json.get('descripcion')
+	frecuencia = request.json.get('frecuencia')
+	id_medicamento = 0
+	if not request.json.get(id_medicamento) is None:
+		id_medicamento = request.json.get('id_medicamento')
+	tratamiento = {'id_diag': id_diag,'id_tratamiento':id_tratamiento, 'descripcion': descripcion, 'frecuencia': frecuencia, 'id_medicamento': id_medicamento}
+	tratamientos.append(tratamiento)
+	return jsonify({'tratamiento':tratamiento}),201
+
+@app.route('/v1/usuarios/<int:id>/diagnosticos/<int:id_diag>/tratamientos/<int:id_tratamiento>/',methods = ['GET'])
 def getTratamiento(id,id_diag,id_tratamiento):
     for tratamiento in tratamientos:
         if tratamiento.get('id_diag') == id_diag and tratamiento.get('id_tratamiento') == id_tratamiento:
-            return jsonify({'tratamientos':tratamiento})
+            return jsonify({'tratamiento':tratamiento})
     abort(404)
+
+@app.route('/v1/usuarios/<int:id>/diagnosticos/<int:id_diag>/tratamientos/<int:id_tratamiento>/',methods = ['PUT'])
+def putTratamiento(id,id_diag,id_tratamiento):
+	tratamiento = [tratamiento for tratamiento in tratamientos if tratamiento['id_tratamiento'] == id_tratamiento]
+	tratamiento[0]['descripcion'] = request.json.get('descripcion', tratamiento[0]['descripcion'])
+	tratamiento[0]['frecuencia'] = request.json.get('frecuencia', tratamiento[0]['frecuencia'])
+	return jsonify({'tratamiento':tratamiento[0]})
+
+@app.route('/v1/usuarios/<int:id>/diagnosticos/<int:id_diag>/tratamientos/<int:id_tratamiento>/',methods = ['DELETE'])
+def deleteTratamiento(id,id_diag,id_tratamiento):
+	tratamiento = [tratamiento for tratamiento in tratamientos if tratamiento['id_tratamiento'] == id_tratamiento]
+	tratamientos.remove(tratamiento[0])
+	return jsonify({}), 204 # No content
 
 @app.route('/v1/medicamentos/', methods=['GET'])
 def getMedicamentos():
 	resultado = []
 	for medicamento in medicamentos:
-		resultado.append({'medicamentos':medicamento})
+		resultado.append({'medicamento':medicamento})
 	return jsonify(resultado)
 
-@app.route('/v1/medicamentos/<int:id>/', methods=['GET'])
-def getMedicamento(id):
+@app.route('/v1/medicamentos/', methods=['POST'])
+def postMedicamentos():
+    id_medicamento = medicamentos[-1].get('id_medicamento') + 1
+    nombre = request.json.get('nombre')
+    medicamento = {'id_medicamento': id_medicamento, 'nombre': nombre}
+    medicamentos.append(medicamento)
+    return jsonify({'medicamento':medicamento}),201
+
+@app.route('/v1/medicamentos/<int:id_medicamento>/', methods=['GET'])
+def getMedicamento(id_medicamento):
     for medicamento in medicamentos:
-        if medicamento.get('id_medicamento') == id:
-            return jsonify({'medicamentos':medicamento})
+        if medicamento.get('id_medicamento') == id_medicamento:
+            return jsonify({'medicamento':medicamento})
     abort(404)
 
+@app.route('/v1/medicamentos/<int:id_medicamento>/', methods=['PUT'])
+def putMedicamento(id_medicamento):
+	medicamento = [medicamento for medicamento in medicamentos if medicamento['id_medicamento'] == id_medicamento]
+	medicamento[0]['nombre'] = request.json.get('nombre', medicamento[0]['nombre'])
+	return jsonify({'medicamento':medicamento[0]})
+
+@app.route('/v1/medicamentos/<int:id_medicamento>/', methods=['DELETE'])
+def deleteMedicamento(id_medicamento):
+	medicamento = [medicamento for medicamento in medicamentos if medicamento['id_medicamento'] == id_medicamento]
+	medicamentos.remove(medicamento[0])
+	return jsonify({}), 204 # No content
+
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()
