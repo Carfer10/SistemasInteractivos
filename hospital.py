@@ -89,6 +89,11 @@ medicamentos = [
 def not_found(error):
 	return make_response(jsonify({'error': 'No encontrado'}),404)
 
+#Definimos la respuesta para el codigo de error 404
+@app.errorhandler(418)
+def incorrect_params(error):
+	return make_response(jsonify({'error': 'Valor invalido en campo de texto'}),418)
+
 @app.route('/')
 def index():
     return "Bienvenido a la aplicación de gestion de usuarios del hospital"
@@ -108,6 +113,8 @@ def getUsuario(id):
 def crearUsuario():
     id = usuarios[-1].get('id') + 1
     nombreUsuario = request.json.get('nombreUsuario')
+    if not nombreUsuario:
+        abort(418)
     age = request.json.get('age')
     genre = request.json.get('genre')
     usuario = {'id': id, 'nombreUsuario': nombreUsuario, 'age': age, 'genre': genre}
@@ -118,6 +125,8 @@ def crearUsuario():
 def actualizarUsuario(id):
 	usuario = [usuario for usuario in usuarios if usuario['id'] == id]
 	usuario[0]['nombreUsuario'] = request.json.get('nombreUsuario', usuario[0]['nombreUsuario'])
+	if not usuario[0]['nombreUsuario']:
+		abort(418)
 	usuario[0]['age'] = request.json.get('age', usuario[0]['age'])
 	usuario[0]['genre'] = request.json.get('genre', usuario[0]['genre'])
 	return jsonify({'usuario':usuario[0]})
@@ -140,6 +149,8 @@ def getDiagnosticos(id):
 def postDiagnostico(id):
 	id_diag = diagnosticos[-1].get('id_diag') + 1
 	descripcion = request.json.get('descripcion')
+	if not descripcion:
+		abort(418)
 	fecha = request.json.get('fecha')
 	diagnostico = {'id_diag': id_diag, 'descripcion': descripcion, 'fecha': fecha, 'id_user': id}
 	diagnosticos.append(diagnostico)
@@ -157,6 +168,8 @@ def getDiagnostico(id,id_diag):
 def putDiagnostico(id,id_diag):
 	diagnostico = [diagnostico for diagnostico in diagnosticos if diagnostico['id_diag'] == id_diag]
 	diagnostico[0]['descripcion'] = request.json.get('descripcion', diagnostico[0]['descripcion'])
+	if not diagnostico[0]['descripcion']:
+		abort(418)
 	diagnostico[0]['fecha'] = request.json.get('fecha', diagnostico[0]['fecha'])
 	return jsonify({'diagnostico':diagnostico[0]})
 
@@ -178,10 +191,12 @@ def getTratamientos(id,id_diag):
 def postTratamiento(id,id_diag):
 	id_tratamiento = tratamientos[-1].get('id_tratamiento') + 1
 	descripcion = request.json.get('descripcion')
+	if not descripcion:
+		abort(418)
 	frecuencia = request.json.get('frecuencia')
-	id_medicamento = 0
-	if not request.json.get(id_medicamento) is None:
-		id_medicamento = request.json.get('id_medicamento')
+	id_medicamento = request.json.get('id_medicamento')
+	if not id_medicamento:
+		id_medicamento = 0
 	tratamiento = {'id_diag': id_diag,'id_tratamiento':id_tratamiento, 'descripcion': descripcion, 'frecuencia': frecuencia, 'id_medicamento': id_medicamento}
 	tratamientos.append(tratamiento)
 	return jsonify({'tratamiento':tratamiento}),201
@@ -197,6 +212,8 @@ def getTratamiento(id,id_diag,id_tratamiento):
 def putTratamiento(id,id_diag,id_tratamiento):
 	tratamiento = [tratamiento for tratamiento in tratamientos if tratamiento['id_tratamiento'] == id_tratamiento]
 	tratamiento[0]['descripcion'] = request.json.get('descripcion', tratamiento[0]['descripcion'])
+	if not tratamiento[0]['descripcion']:
+		abort(418)
 	tratamiento[0]['frecuencia'] = request.json.get('frecuencia', tratamiento[0]['frecuencia'])
 	return jsonify({'tratamiento':tratamiento[0]})
 
@@ -217,6 +234,8 @@ def getMedicamentos():
 def postMedicamentos():
     id_medicamento = medicamentos[-1].get('id_medicamento') + 1
     nombre = request.json.get('nombre')
+    if not nombre:
+        abort(418)
     medicamento = {'id_medicamento': id_medicamento, 'nombre': nombre}
     medicamentos.append(medicamento)
     return jsonify({'medicamento':medicamento}),201
@@ -232,6 +251,8 @@ def getMedicamento(id_medicamento):
 def putMedicamento(id_medicamento):
 	medicamento = [medicamento for medicamento in medicamentos if medicamento['id_medicamento'] == id_medicamento]
 	medicamento[0]['nombre'] = request.json.get('nombre', medicamento[0]['nombre'])
+	if not medicamento[0]['nombre']:
+		abort(418)
 	return jsonify({'medicamento':medicamento[0]})
 
 @app.route('/v1/medicamentos/<int:id_medicamento>/', methods=['DELETE'])
