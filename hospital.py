@@ -89,7 +89,7 @@ medicamentos = [
 def not_found(error):
 	return make_response(jsonify({'error': 'No encontrado'}),404)
 
-#Definimos la respuesta para el codigo de error 404
+#Definimos la respuesta para el codigo de error 418
 @app.errorhandler(418)
 def incorrect_params(error):
 	return make_response(jsonify({'error': 'Valor invalido en campo de texto'}),418)
@@ -134,6 +134,13 @@ def actualizarUsuario(id):
 @app.route('/v1/usuarios/<int:id>/', methods=['DELETE'])
 def borrarUsuario(id):
 	usuario = [usuario for usuario in usuarios if usuario['id'] == id]
+	diagnosticos_user = [diagnostico for diagnostico in diagnosticos if diagnostico['id_user'] == id]
+	# Si eliminamos un usuario, debemos eliminar toda la información asociada
+	for diagnostico in diagnosticos_user:
+		tratamientos_diag = [tratamiento for tratamiento in tratamientos if tratamiento['id_diag'] == diagnostico['id_diag']]
+		for elem in tratamientos_diag:
+			tratamientos.remove(elem)
+		diagnosticos.remove(diagnostico)
 	usuarios.remove(usuario[0])
 	return jsonify({}), 204 # No content
 
@@ -176,6 +183,9 @@ def putDiagnostico(id,id_diag):
 @app.route('/v1/usuarios/<int:id>/diagnosticos/<int:id_diag>/', methods=['DELETE'])
 def deleteDiagnostico(id,id_diag):
 	diagnostico = [diagnostico for diagnostico in diagnosticos if diagnostico['id_diag'] == id_diag]
+	tratamientos_diag = [tratamiento for tratamiento in tratamientos if id_diag == tratamiento['id_tratamiento']]
+	for elem in tratamientos_diag:
+		tratamientos.remove(elem)
 	diagnosticos.remove(diagnostico[0])
 	return jsonify({}), 204 # No content
 
