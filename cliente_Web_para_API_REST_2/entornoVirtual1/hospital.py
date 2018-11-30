@@ -84,19 +84,13 @@ medicamentos = [
     }
 ]
 
-#Definimos la respuesta para el codigo de error 404
-@app.errorhandler(404)
-def not_found(error):
-	return make_response(jsonify({'error': 'No encontrado'}),404)
-
-#Definimos la respuesta para el codigo de error 418
-@app.errorhandler(418)
-def incorrect_params(error):
-	return make_response(jsonify({'error': 'Valor invalido en campo de texto'}),418)
-
 @app.route('/')
 def root():
 	return app.send_static_file('index.html')
+
+@app.route('/medicamentos.html')
+def root_med():
+	return app.send_static_file('medicamentos.html')
 
 @app.route('/v1/usuarios/', methods=['GET'])
 def getUsuarios():
@@ -108,6 +102,16 @@ def getUsuario(id):
         if usuario.get('id') == id:
             return jsonify({'usuario':usuario})
     abort(404)
+
+#Definimos la respuesta para el codigo de error 404
+@app.errorhandler(404)
+def not_found(error):
+	return make_response(jsonify({'error': 'No encontrado'}),404)
+
+#Definimos la respuesta para el codigo de error 418
+@app.errorhandler(418)
+def incorrect_params(error):
+	return make_response(jsonify({'error': 'Valor invalido en campo de texto'}),418)
 
 @app.route('/v1/usuarios/', methods=['POST'])
 def crearUsuario():
@@ -235,10 +239,7 @@ def deleteTratamiento(id,id_diag,id_tratamiento):
 
 @app.route('/v1/medicamentos/', methods=['GET'])
 def getMedicamentos():
-	resultado = []
-	for medicamento in medicamentos:
-		resultado.append({'medicamento':medicamento})
-	return jsonify(resultado)
+	return jsonify({'medicamentos': medicamentos})
 
 @app.route('/v1/medicamentos/', methods=['POST'])
 def postMedicamentos():

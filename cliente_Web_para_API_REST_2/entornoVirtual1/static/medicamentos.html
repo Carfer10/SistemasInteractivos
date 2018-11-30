@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <title>Aplicación Web - CRUD Usuarios</title>
+
+    <!-- Codificación utilizada (UTF-8) para representar bien acentos, eñes, ...  -->
+    <meta charset="utf-8">
+
+    <!-- Meta-etiquetas para los robots araña de los buscadores -->
+    <meta name="description" content="Aplicación Web CRUS Usuarios (de ejemplo)">
+    <meta name="keywords" content="HTML5,CSS3,Javascript,jQuery,Bootstrap,Knockout.js, cliente Web, REST API">
+
+    <!-- Etiqueta relacionada con Bootstrap. Sirve para ayudar a Bootstrap a escalar correctamente
+    el contenido de la página-aplicación según el tamaño de la ventana del navegador -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Hoja de estilo Bootstrap -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+    <!-- Hoja de estilo Para usar los iconos de Font Awesome-->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.2/css/all.css">
+
+    <!-- Javascript (poner jQuery primero), Bootstrap & Knockout.js -->
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.2/knockout-min.js"></script>
+</head>
+
+<body>
+
+    <!-- Barra de navegación con subcomponentes diversos que automáticamente colapsa cuando el tamaño
+    es menor que "Large" (<992 píxeles). Se emplea un estilo y un fondo en tonos claro,
+    proporcionados por Bootstrap. Se configura como "siempre visible -->
+    <nav class="navbar navbar-expand-lg navbar-fixed-top  navbar-dark bg-primary">
+        <div class="container">
+            <!-- Logotipo - marca de la aplicación (usar clase navbar-brand aplicado sobre un <a></a>)
+                Se ha añadido un icono de Font Awesome que representa a un grupo de usuarios-->
+            <a href="#" class="navbar-brand"><i class="fas fa-users" href="#"></i> Usuarios</a>
+            <!-- Ejemplo de botón colapsable para albergar las posibles secciones de la aplciación-->
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <!--Contenedor con lista de secciones colapsable-->
+            <div id="navbarNavDropdown" class="collapse navbar-collapse" id="navbarContenidoSecciones">
+                <ul class="navbar-nav">
+                    <li class="nav-item active">
+                        <a class="nav-link" href="/">Home</a>
+                    </li>
+                    <li class="nav-item active">
+                        <a href='medicamentos.html' class="nav-link" >Medicamentos</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div id="cuerpo" class="container">
+        <!-- Tabla estilo cebra con datos vinculados  -->
+        <table class="table table-striped" style="margin-top:50px;">
+            <tr>
+                <td style="width: 1px;"></td>
+                <td><b>Lista de Medicamentos</b></td>
+                <td><b>Opciones</b></td>
+            </tr>
+            <!-- ko foreach: medicamentos -->
+            <tr>
+                <td>
+                    <span data-bind="text: id_medicamento" class="label"></span>
+                </td>
+                <td>
+                    <p><b>Nombre:&nbsp;&nbsp;</b><span data-bind="text: nombre"></span></p>
+                </td>
+                <td>
+                    <button data-bind="click: $parent.editar" class="btn">Editar</button>
+                    <button data-bind="click: $parent.borrar" class="btn">Borrar</button>
+                </td>
+            </tr>
+            <!-- /ko -->
+        </table>
+        <div class="row">
+            <div class="col-12"><button data-bind="click: anyadir" class="btn float-right" style="margin-bottom:50px;">Añadir Medicamento</button></div>
+        </div>
+    </div>
+
+    <div id="anyadir" class="modal hide fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-light">
+                    <h5>Añadir Medicamento</h5>
+                    <!-- data-dismiss cierra todos los cuadros modales abiertos -->
+                    <button type="button" class="close text-light" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form class="form-horizontal">
+                        <div class="control-group">
+                            <label class="control-label" for="inputNombre">Nombre</label>
+                            <div class="controls">
+                                <input data-bind="value: nombre" type="text" id="inputNombre" placeholder="Ej. Paracetamol" style="width: 150px;">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button data-bind="click: anyadirMedicamento" type="button" class="btn btn-primary">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cuadro de dialogo para editar un medicamento -->
+    <div id="editar" class="modal hide fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-light">
+                    <h5>Editar Medicamento</h5>
+                    <!-- data-dismiss cierra todos los cuadros modales abiertos -->
+                    <button type="button" class="close text-light" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                  <form class="form-horizontal">
+                    <div class="control-group">
+                      <label class="control-label" for="inputNombre">Nombre</label>
+                        <div class="controls">
+                          <input data-bind="value: nombre" type="text" id="inputNombre" placeholder="Ej. Ibuprofeno" style="width: 150px;">
+                        </div>
+                    </div>
+                  </form>
+            </div>
+            <div class="modal-footer">
+                <button data-bind="click: guardarModificacion" type="button" class="btn btn-primary">Guardar modificación</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    // Código Javascript
+    function MedicamentosViewModel() {
+        var self = this;
+        self.medicamentosURI = 'http://127.0.0.1:5000/v1/medicamentos/';
+        self.medicamentos = ko.observableArray();
+
+        self.miAjax = function(uri, method, data) {
+            var request = {
+                url: uri,
+                type: method,
+                contentType: "application/json",
+                accepts: "application/json",
+                cache: false,
+                dataType: 'json',
+                data: JSON.stringify(data),
+                error: function(jqXHR) {
+                    console.log("Se ha producido un error en una petición Ajax: " + jqXHR.status);
+                }
+            };
+
+            return $.ajax(request);
+        }
+
+        self.anyadir = function () {
+            $('#anyadir').modal('show');
+        }
+
+        self.guardarNuevo = function (medicamento) {
+            self.miAjax(self.medicamentosURI, 'POST', medicamento).done(
+                function(data) {
+                    self.medicamentos.push({
+                        id_medicamento: ko.observable(data.medicamento.id_medicamento),
+                        nombre: ko.observable(data.medicamento.nombre)
+                    });
+                }
+            );
+        }
+
+        self.editar = function (medicamento) {
+            editarMedicamentoViewModel.mostrarMedicamento(medicamento);
+            $('#editar').modal('show');
+        }
+
+        self.guardarModificacion = function (medicamentoOriginal, medicamentoModificado) {
+            self.miAjax(self.medicamentosURI + medicamentoModificado.id_medicamento + '/', 'PUT', medicamentoModificado).done(
+                function (data) {
+                    data.medicamento.id_medicamento = ko.observable(data.medicamento.id_medicamento);
+                    data.medicamento.nombre = ko.observable(data.medicamento.nombre);
+                    self.medicamentos.replace(medicamentoOriginal,data.medicamento);
+                });
+        }
+
+
+        self.borrar = function (medicamento) {
+            alert("Borrar: " + medicamento.nombre());
+            self.miAjax((self.medicamentosURI+medicamento.id_medicamento()+"/"), 'DELETE').done(function (data) {
+                self.medicamentos.remove(medicamento);
+            });
+        }
+
+        // Para el get que obtiene la colección de medicamentos completa NO pasamos datos
+        self.miAjax(self.medicamentosURI, 'GET').done(function (data) {
+            for (var i = 0; i < data.medicamentos.length; i++) {
+                self.medicamentos.push({
+                    id_medicamento: ko.observable(data.medicamentos[i].id_medicamento),
+                    nombre: ko.observable(data.medicamentos[i].nombre),
+                });
+            }
+        });
+
+      }
+
+      var medicamentosViewModel = new MedicamentosViewModel();
+
+        // Nuevo Modelo de Vista para anyadir medicamentos
+        function AnyadirMedicamentoViewModel() {
+            var self = this;
+            self.nombre = ko.observable();
+
+            self.anyadirMedicamento = function() {
+                $('#anyadir').modal('hide');
+
+                medicamentosViewModel.guardarNuevo({
+                    nombre: self.nombre()
+                });
+                self.nombre("");
+            }
+        }
+
+        // Nuevo Modelo de Vista para editar usuarios
+        function EditarMedicamentoViewModel() {
+            var self = this;
+            self.id_medicamento = ko.observable();
+            self.nombre = ko.observable();
+
+            self.mostrarMedicamento = function(medicamento) {
+                // Lo copia antes de modificarlo
+                self.medicamento = medicamento;
+                self.id_medicamento(medicamento.id_medicamento())
+                self.nombre(medicamento.nombre());
+            }
+
+            self.guardarModificacion = function(){
+                $('#editar'). modal('hide');
+                medicamentosViewModel.guardarModificacion(self.medicamento, {
+                    id_medicamento: self.id_medicamento(),
+                    nombre: self.nombre()
+                })
+            }
+
+    }
+
+    var anyadirMedicamentoViewModel = new AnyadirMedicamentoViewModel();
+    ko.applyBindings(medicamentosViewModel, $('#cuerpo')[0]);
+    ko.applyBindings(anyadirMedicamentoViewModel, $('#anyadir')[0]);
+    var editarMedicamentoViewModel = new EditarMedicamentoViewModel();
+    ko.applyBindings(editarMedicamentoViewModel, $('#editar')[0]);
+</script>
+</body>
+</html>
